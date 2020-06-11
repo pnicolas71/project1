@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Change Password
+{% endblock %}
+
+{% block main %}
+    <form name="search" action="/search" method="post">
+        <div class="form-group">
+            <input class="form-control" name="search_book" placeholder="enter isbn or author name or book title" type="text" id="search_book" >
+        </div>
+         <button class="btn btn-primary" type="submit">Search for Book</button>
+    </form>
+{% endblock %}

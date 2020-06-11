@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Books
+{% endblock %}
+
+{% block main %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+            <th scope="col">isbn</th>
+            <th scope="col">book</th>
+            <th scope="col">author</th>
+            <th scope="col">year</th>
+            </tr>
+        </thead>
+
+    
+    {% for book in books %}
+        <tr>
+            <td>{{ book.isbn }}</td>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>{{ book.pb_year }}</td>
+        </tr>
+    {% endfor %}
+
+{% endblock %}
