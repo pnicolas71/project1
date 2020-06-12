@@ -9,6 +9,10 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.exceptions import default_exceptions, HTTPException, InternalServerError
 
+from helpers import login_required
+
+import requests 
+
 # Configure application
 app = Flask(__name__)
 
@@ -36,10 +40,12 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
+
 # Set up database
 # database engine object from SQLAlchemy that manages connections to the # DATABASE_URL is an environment variable that indicates where the database db = scoped_session(sessionmaker(bind=engine)) # create a 'scoped session' that ensures different users' interactions with # database are kept separate
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
+
 
 #res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": "9781632168146"})
 # print(res.json())
@@ -100,7 +106,7 @@ def login():
 
 
 @app.route("/change", methods=["GET", "POST"])
-# @login_required
+@login_required
 def change():
     """Register user"""
     user = []
@@ -112,12 +118,8 @@ def change():
 
     for row in user:
         if(row['id'] == userid):
-            print(row)
             username = row['username']
             old_hash = row['hash']
-
-    print(username)
-    print("old hash: ", old_hash)
 
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
@@ -214,7 +216,7 @@ def register():
 
 
 @app.route("/search", methods=["GET", "POST"])
-# @login_required
+@login_required
 def search():
     # User reached route via POST (as by submitting a form via POST)
     # search for ISBN, AUTHOR ou TITLE based on entry
@@ -229,16 +231,35 @@ def search():
         return render_template("search.html")
 
 
-# def errorhandler(e):
- #   """Handle error"""
-   # if not isinstance(e, HTTPException):
-     #   e = InternalServerError()
-    # return apology(e.name, e.code)
+@app.route
+@app.route("/API/<string:isbn>")
+@login_required
+def API(isbn):
+    """API details about a book based on isbn."""
+    
+    #Make sure book exists.
+    book = db.execute("SELECT * FROM books WHERE isbn LIKE :isbn", {"isbn": isbn + "%"}).fetchone()
+
+    # books = db.execute("SELECT * FROM books WHERE isbn LIKE :search_book OR lower(title) LIKE :search_book OR lower(author) LIKE :search_book ORDER BY title ASC ", {"search_book": "%" + search_book.lower() + "%"}).fetchmany(200)
+    if book is None:
+        return render_template("error.html", message="No such book.")
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": book["isbn"]})
+    if res.status_code != 200:
+        raise Exception("ERROR: API request unsuccessful.")
+    data = res.json()
+    return data
+
+
+def errorhandler(e):
+    """Handle error"""
+    if not isinstance(e, HTTPException):
+        e = InternalServerError()
+        return apology(e.name, e.code)
 
 
 # Listen for errors
-# for code in default_exceptions:
- #   app.errorhandler(code)(errorhandler)
+for code in default_exceptions:
+    app.errorhandler(code)(errorhandler)
 
 if __name__ == '__main__':
     app.run(debug=True)

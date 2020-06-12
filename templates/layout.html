@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
-    <head>
+<head>
 
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -10,6 +9,8 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/static/styles.css"/>
 
     <title>Books: {% block title %}{% endblock %}</title>
 
@@ -42,6 +43,33 @@
             </div>
         </nav>
 
+        <main class="container p-5">
+            {% block main %}{% endblock %}
+        </main>
+
+        {% block premain %}{% endblock %}
+
+        <main role="main" class="container">
+            <div class="row">
+              <div class="col-md-8">
+                {% block content %}{% endblock %}
+              </div>
+              <div class="col-md-4">
+                <div class="content-section">
+                  <h3>Our Sidebar</h3>
+                  <p class='text-muted'>You can put any information here you'd like.
+                    <ul class="list-group">
+                      <li class="list-group-item list-group-item-light">Latest Posts</li>
+                      <li class="list-group-item list-group-item-light">Announcements</li>
+                      <li class="list-group-item list-group-item-light">Calendars</li>
+                      <li class="list-group-item list-group-item-light">etc</li>
+                    </ul>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </main>
+
         {% if get_flashed_messages() %}
             <header>
                 <div class="alert alert-primary border text-center" role="alert">
@@ -51,16 +79,13 @@
         {% endif %}
 
 
-        {% block premain %}{% endblock %}
+        
 
-        <main class="container p-5">
-            {% block main %}{% endblock %}
-        </main>
+
 
         <footer class="small text-center text-muted">
             
-            Data provided for free by Goodreads <a href="https://www.goodreads.com/update_status?isbn=0316015849&url=https%3A%2F%2Fwww.goodreads.com%2Fbook%2Fshow%2F19501"><img alt="Share on Goodreads" border="0" 
-            src="https://www.goodreads.com/images/icons/goodreads_icon_32x32.png" /></a>
+        Data provided for free by Goodreads  <img src="/static/image/goodreads_icon.jpg" alt="Picture of Goodreads" width="20px" height="20px"/>
             
         </footer>
     <!-- Optional JavaScript -->
