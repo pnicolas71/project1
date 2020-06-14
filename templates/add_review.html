@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add review
+{% endblock %}
+
+{% block main %}
+    <form action="/add_review" method="post">
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="review_text" placeholder="Book review" type="text">
+        </div>
+        <div class="form-group">
+            <input class="form-control" name="review_rating" placeholder="rate your book" type="integer">
+        </div>
+        <div class="form-group">
+            <input class="form-control" name="review_date" placeholder="date" type="date">
+        </div>
+        <button class="btn btn-primary" type="submit">Log In</button>
+    </form>
+{% endblock %}	
+

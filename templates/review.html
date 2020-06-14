@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Review
+{% endblock %}
+
+
+{% block main %}
+    <h3>{{ isbn }} review</h3>
+    <a href="{{ url_for ('review', isbn_review=isbn) }}">None</a>
+{% endblock %}
