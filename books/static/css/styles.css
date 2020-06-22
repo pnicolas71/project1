@@ -1,0 +1,94 @@
+.navbar-brand {
+    line-height:20px;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+.navbar-books {
+    position: absolute;
+  }
+  
+.navbar-brand small {
+    display:block;
+    font-size:20px;
+  }
+
+
+body {
+    background-image: url(/static/image/paper5.jpg);
+    background-repeat: repeat;
+    background-color: #f8f1f1;
+}
+
+#books-img {
+  margin-top: 62px;
+  max-width: 100%;
+  height: auto;
+	
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+  #books-img {
+    left: 50%;
+    margin-left: -512px;   /* 50% */
+  }
+}
+
+#books-img {
+   
+}
+
+@media screen and (max-width: 767px) {
+    #books-img,
+    .image {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 768px) {
+    #books-hor,
+    .image {
+      display: none;
+    }
+  }
+
+
+main .form-control
+{
+    /* center form controls */
+    display: inline-block;
+
+    /* override Bootstrap's 100% width for form controls */
+    width: auto;
+}
+
+main
+{
+    /* scroll horizontally as needed */
+    overflow-x: auto;
+
+    /* center contents */
+    text-align: center;
+}
+
+main img
+{
+    /* constrain images on small screens */
+    max-width: 100%;
+}
+
+.footer {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #A66B05 ;
+    color: white;
+    text-align: center;
+  }

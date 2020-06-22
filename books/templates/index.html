@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Books
+{% endblock %}
+
+{% block premain %}
+
+    {% if success_message %}
+        <div class="alert alert-info" role="alert" style="text-align : center">
+            {{success_message}}
+        </div>
+    {%endif%}
+
+{% endblock %}
+
+{% block main %}
+{% endblock %}

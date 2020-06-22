@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Error
+{% endblock %}
+
+{% block premain %}
+<div class="alert alert-danger">
+    <strong>ERROR:</strong> {{ message }}
+</div>
+{% endblock %}

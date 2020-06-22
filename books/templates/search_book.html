@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Search Book
+{% endblock %}
+
+{% block premain %}
+
+{% if error_message %}
+<div class="alert alert-danger">
+    <strong>ERROR:</strong> {{ error_message }}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block main %}
+    <form id="searc-book" name="search_book" action="/search_book" method="post">
+        <div class="form-group">
+            <input class="form-control" name="search_book" placeholder="enter isbn or author name or book title" 
+                type="text" id="search_book">
+        </div>
+        <button class="btn btn-primary" type="submit">Search for Book</button>
+    </form>
+{% endblock %}

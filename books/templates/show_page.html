@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Book Detail
+{% endblock %}
+
+{% block premain%}
+{% if error_message %}
+<div class="alert alert-danger">
+  <strong>ERROR:</strong> {{ error_message }}
+</div>
+{% endif %}
+{% endblock %}
+
+
+
+
+{% block main %}
+
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Book page</h4>
+      <hr>
+      <h5>isbn: {{ book.isbn }}</h5>
+      <h5>Title: {{ book.title }}</h5> 
+      <h5>Author: {{ book.author }}</h5>
+      <h5>Publication year: {{ book.pb_year }}</h5>
+      
+      {% if gr_ratings %}
+      <hr>
+      <h5>GR average_rating: {{ gr_ratings['average_score'] }}</h5>
+      <h5>GR ratings_count: {{ gr_ratings['reviews_count'] }}</h5>
+      {% endif %}
+      {% if reviews %}
+      <hr>
+      <h5 style="color: blue">Reviews</h5>
+      {% for review in reviews %}
+      <ph5User : {{review.review_user_email}}</h5>
+      <h5>rating: {{review.review_rating}}</h5>
+      <h5>review: {{review.review_text}}</h5>
+      <h5>Review date: {{review.review_date}}</h5>
+      <h5>Review time: {{review.review_time}}</h5>
+      {% endfor %}
+      {% endif %}
+      <a href="url_for('new_review', {{book.isbn}}) class="card-link">Another link</a>
+      <a href="{{ url_for ('search_book') }}">Search Another book</a>
+      <a href="/search_book" class="card-link">show another book</a>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
