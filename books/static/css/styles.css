@@ -8,7 +8,7 @@
 .navbar-brand small {
     display:block;
     font-size:20px;
-  }
+}
 
 body {
     background-image: url(/static/image/paper5.jpg);
@@ -57,7 +57,7 @@ body {
 }
 
 thead{
-  color: #32200B);
+  color: #32200B;
 }
 
 #books-img {
@@ -152,4 +152,4 @@ main img
     background-color:#BC6C25;
     color: white;
     text-align: center;
-  }
+}

@@ -215,7 +215,7 @@ def register():
         db.execute("INSERT INTO users (user_firstname, user_lastname, user_email, user_hash) VALUES (:user_firstname, :user_lastname, :user_email, :user_hash)",
                    {"user_firstname": user_fn, "user_lastname": user_ln, "user_email": user_email, "user_hash": user_hash})
         db.commit()
-        return render_template("search_book.html", success_message="You've signed up for our service with success")
+        return render_template("login.html", success_message="You've signed up for our service with success")
 
     else:
         return render_template("register.html")
