@@ -119,6 +119,12 @@ thead{
     }
   }
 
+.url-link a{
+  color: #545E31;
+  text-decoration: underline;
+  line-height: 2;
+  font-style: italic;
+}
 
 
 main

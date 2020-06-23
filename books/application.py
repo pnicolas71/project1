@@ -28,6 +28,7 @@ app.config['JSON_SORT_KEYS'] = False
 
 # Ensure responses aren't cached
 
+
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -52,19 +53,11 @@ def index():
     """Show root"""
     return render_template("login.html")
 
+
 @app.route("/test")
 def test():
     """Show root"""
     return render_template("background.html")
-
-@app.route("/error")
-def error():
-    return render_template("error.html", message={message})
-
-
-@app.route("/success")
-def success():
-    return render_template("success.html", message={message})
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -130,7 +123,8 @@ def change_password():
         elif (request.form.get("confirm_new_password") != request.form.get("new_password")):
             return render_template("change_password.html", error_message="Password and confirmation password don't match, 403")
 
-        rows = db.execute("SELECT id, user_email, user_hash FROM users WHERE id = :user_id", {"user_id": uid}).fetchall()
+        rows = db.execute("SELECT id, user_email, user_hash FROM users WHERE id = :user_id", {
+                          "user_id": uid}).fetchall()
         for row in rows:
             if row['id'] == uid:
                 old_hash = row['user_hash']
@@ -138,21 +132,21 @@ def change_password():
 
         # check old password hash key
         if not check_password_hash(old_hash, request.form.get("old_password")):
-            return render_template("error.html", message="Must provide correct old password, 403")
+            return render_template("change_password.html", error_message="Must provide correct old password, 403")
 
         new_hash = generate_password_hash(request.form.get("new_password"))
 
         update_hash_qry = """
                 UPDATE users SET user_hash = :user_hash WHERE id = :uid
              """
-        params = {'uid' : uid, "user_hash" : new_hash}
+        params = {'uid': uid, "user_hash": new_hash}
 
         db.execute(text(update_hash_qry), params)
 
         db.commit()
 
         session.clear()
-        
+
         return render_template("login.html")
 
     else:
@@ -219,78 +213,78 @@ def register():
         user_hash = generate_password_hash(request.form.get("password"))
 
         db.execute("INSERT INTO users (user_firstname, user_lastname, user_email, user_hash) VALUES (:user_firstname, :user_lastname, :user_email, :user_hash)",
-            {"user_firstname": user_fn, "user_lastname": user_ln, "user_email": user_email,"user_hash": user_hash})
+                   {"user_firstname": user_fn, "user_lastname": user_ln, "user_email": user_email, "user_hash": user_hash})
         db.commit()
-        return render_template("index.html", success_message = "You've signed up for our service with success")
+        return render_template("search_book.html", success_message="You've signed up for our service with success")
 
     else:
         return render_template("register.html")
 
 
-@ app.route("/search_book", methods = ["GET", "POST"])
+@ app.route("/search_book", methods=["GET", "POST"])
 @ login_required
 def search_book():
-
     """Search for books"""
 
     # User reached route via POST (as by submitting a form via POST)
     # search for ISBN, AUTHOR ou TITLE based on entry
     if request.method == "POST":
 
-                # Ensure user_email was submitted
+        # Ensure user_email was submitted
         if not request.form.get("search_book"):
             return render_template("search_book.html", error_message="Nothing to search, 403")
-        
-        search_book=request.form.get("search_book")
-        books=db.execute("SELECT * FROM books WHERE isbn LIKE :search_book OR lower(title) LIKE :search_book OR lower(author) LIKE :search_book ORDER BY title ASC ",
-                         {"search_book": "%" + search_book.lower() + "%"}).fetchall()
+
+        search_book = request.form.get("search_book")
+        books = db.execute("SELECT * FROM books WHERE isbn LIKE :search_book OR lower(title) LIKE :search_book OR lower(author) LIKE :search_book ORDER BY title ASC ",
+                           {"search_book": "%" + search_book.lower() + "%"}).fetchall()
 
         if not books:
-            return render_template("search_book.html", error_message = "No book matches this search")    
+            return render_template("search_book.html", error_message="No book matches this search")
 
-        return render_template("book_list.html", books = books)
-    
+        return render_template("book_list.html", books=books)
+
     else:
         return render_template("search_book.html")
 
-@ app.route("/show_page/<string:isbn_page>", methods = ["GET", "POST"])
+
+@ app.route("/show_page/<string:isbn_page>", methods=["GET", "POST"])
 @ login_required
 def show_page(isbn_page):
-    book=db.execute("SELECT * FROM books WHERE isbn = :isbn_page ",
-                         {"isbn_page": isbn_page }).fetchone()
-    reviews=db.execute("SELECT * FROM reviews WHERE book_id = :isbn_page ",
-                         {"isbn_page": isbn_page }).fetchall()
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn_page ",
+                      {"isbn_page": isbn_page}).fetchone()
+    reviews = db.execute("SELECT * FROM reviews WHERE book_id = :isbn_page ",
+                         {"isbn_page": isbn_page}).fetchall()
     """ Show book details + add new review """
 
-    res=requests.get("https://www.goodreads.com/book/review_counts.json",
-                     params = {"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": isbn_page})
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": isbn_page})
     if not res.status_code != 200:
-    
-        gr_review=res.json()
 
-        gr_ratings={}
+        gr_review = res.json()
+
+        gr_ratings = {}
         gr_ratings['average_score'] = gr_review['books'][0]["average_rating"]
         gr_ratings['reviews_count'] = gr_review['books'][0]["reviews_count"]
-       
 
-    return render_template("show_page.html", book=book, reviews=reviews, gr_ratings=gr_ratings) 
+    return render_template("show_page.html", book=book, reviews=reviews, gr_ratings=gr_ratings)
 
-@ app.route("/new_review/<string:review_isbn>", methods = ["GET", "POST"])
+
+@ app.route("/new_review/<string:review_isbn>", methods=["GET", "POST"])
 @ login_required
 def new_review(review_isbn):
 
-    res=requests.get("https://www.goodreads.com/book/review_counts.json",
-                    params = {"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": review_isbn})
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": review_isbn})
     if not res.status_code != 200:
-    
-        gr_review=res.json()
 
-        gr_ratings={}
+        gr_review = res.json()
+
+        gr_ratings = {}
         gr_ratings['average_score'] = gr_review['books'][0]["average_rating"]
         gr_ratings['reviews_count'] = gr_review['books'][0]["reviews_count"]
-    
+
     if request.method == "GET":
-        return render_template("new_review.html",review_isbn=review_isbn, gr_ratings=gr_ratings)
+        return render_template("new_review.html", review_isbn=review_isbn, gr_ratings=gr_ratings)
     else:
         rtext = request.form.get("review_text")
         rr = request.form.get("review_rating")
@@ -299,28 +293,32 @@ def new_review(review_isbn):
         rt = now.strftime("%H:%M:%S")
         userid = session["user_id"]
 
-        review_user_email = db.execute("SELECT user_email FROM users WHERE id = :id ", {"id": userid }).fetchone()
+        review_user_email = db.execute(
+            "SELECT user_email FROM users WHERE id = :id ", {"id": userid}).fetchone()
         ru = review_user_email['user_email']
-        
-        res = requests.get("https://www.goodreads.com/book/review_counts.json", params = {"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": review_isbn})
-        
-        actual_book=db.execute("SELECT * FROM books WHERE isbn = :book_isbn ",
-                         {"book_isbn": review_isbn }).fetchone()
-        
-        review_exist=db.execute("SELECT * FROM reviews WHERE book_id = :review_isbn AND user_id = :userid ", {"review_isbn": review_isbn, "userid": userid }).fetchall()
+
+        res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                           params={"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": review_isbn})
+
+        actual_book = db.execute("SELECT * FROM books WHERE isbn = :book_isbn ",
+                                 {"book_isbn": review_isbn}).fetchone()
+
+        review_exist = db.execute("SELECT * FROM reviews WHERE book_id = :review_isbn AND user_id = :userid ", {
+                                  "review_isbn": review_isbn, "userid": userid}).fetchall()
 
         if not review_exist:
-            db.execute("INSERT INTO reviews (book_id, user_id, review_text, review_rating, review_date, review_time, review_user_email) VALUES (:book_id, :user_id, :review_text, :review_rating, :review_date, :review_time, :review_user_email)", {"book_id": review_isbn, "user_id": userid ,"review_text" : rtext ,"review_rating": rr ,"review_date": rd, "review_time": rt, "review_user_email": ru} ) 
+            db.execute("INSERT INTO reviews (book_id, user_id, review_text, review_rating, review_date, review_time, review_user_email) VALUES (:book_id, :user_id, :review_text, :review_rating, :review_date, :review_time, :review_user_email)", {
+                       "book_id": review_isbn, "user_id": userid, "review_text": rtext, "review_rating": rr, "review_date": rd, "review_time": rt, "review_user_email": ru})
             db.commit()
-            
-            reviews=db.execute("SELECT * FROM reviews WHERE book_id = :review_isbn ",
-                         {"review_isbn": review_isbn }).fetchall()
+
+            reviews = db.execute("SELECT * FROM reviews WHERE book_id = :review_isbn ",
+                                 {"review_isbn": review_isbn}).fetchall()
 
             return render_template("show_page.html", book=actual_book, reviews=reviews, gr_ratings=gr_ratings)
-        
+
         else:
-            reviews=db.execute("SELECT * FROM reviews WHERE book_id = :review_isbn ",
-                    {"review_isbn": review_isbn }).fetchall()
+            reviews = db.execute("SELECT * FROM reviews WHERE book_id = :review_isbn ",
+                                 {"review_isbn": review_isbn}).fetchall()
             return render_template("show_page.html", book=actual_book, reviews=reviews, gr_ratings=gr_ratings, error_message="This user has already added a review for this book")
 
 
@@ -330,40 +328,40 @@ def API(isbn):
     """API details about a book based on isbn."""
 
     # Make sure book exists.
-    book=db.execute("SELECT * FROM books WHERE isbn = :isbn",
-                    {"isbn": isbn}).fetchone()
+    book = db.execute("SELECT * FROM books WHERE isbn = :isbn",
+                      {"isbn": isbn}).fetchone()
 
     if book is None:
-        return render_template("error.html", message = "This book isbn doesn't exist, 404.")
-    res=requests.get("https://www.goodreads.com/book/review_counts.json",
-                     params = {"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": book["isbn"]})
+        return render_template("index.html", error_message="This book isbn doesn't exist, 404.")
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": "OCzrG88Hujx2LRMl0UyX2w", "isbns": book["isbn"]})
     if res.status_code != 200:
         raise Exception("ERROR: API request unsuccessful.")
-    
-    gr_review=res.json()
 
-    gr_ratings={}
+    gr_review = res.json()
+
+    gr_ratings = {}
     gr_ratings['title'] = book['title']
     gr_ratings['author'] = book['author']
     gr_ratings['year'] = book['pb_year']
     gr_ratings['isbn'] = gr_review['books'][0]["isbn"]
+    gr_ratings['reviews_count'] = gr_review['books'][0]["reviews_count"]
     gr_ratings['average_score'] = gr_review['books'][0]["average_rating"]
     #gr_ratings['id'] = gr_review['books'][0]["id"]
     #gr_ratings['isbn13'] = gr_review['books'][0]["isbn13"]
     #gr_ratings['ratings_count'] = gr_review['books'][0]["ratings_count"]
-    gr_ratings['reviews_count'] = gr_review['books'][0]["reviews_count"]
     #gr_ratings['text_reviews_count'] = gr_review['books'][0]["text_reviews_count"]
     #gr_ratings['work_ratings_count'] = gr_review['books'][0]["work_ratings_count"]
     #gr_ratings['work_reviews_count'] = gr_review['books'][0]["work_reviews_count"]
     #gr_ratings['work_text_reviews_count'] = gr_review['books'][0]["work_text_reviews_count"]
-    
+
     return gr_ratings
 
 
 def errorhandler(e):
     """Handle error"""
     if not isinstance(e, HTTPException):
-        e=InternalServerError()
+        e = InternalServerError()
         return apology(e.name, e.code)
 
 
@@ -372,4 +370,4 @@ for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
 
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(debug=True)
