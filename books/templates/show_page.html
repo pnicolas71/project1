@@ -13,16 +13,15 @@
 {% endblock %}
 
 
-
-
 {% block main %}
+  <hr>
+  <h2>Book Page</h2>
 
   <div class="card">
     <div class="card-body">
-      <h4 class="card-title">Book page</h4>
+      <h4 class="card-title">Book title: {{book.title}}</h4>
       <hr>
       <h5>isbn: {{ book.isbn }}</h5>
-      <h5>Title: {{ book.title }}</h5> 
       <h5>Author: {{ book.author }}</h5>
       <h5>Publication year: {{ book.pb_year }}</h5>
       
@@ -31,21 +30,23 @@
       <h5>GR average_rating: {{ gr_ratings['average_score'] }}</h5>
       <h5>GR ratings_count: {{ gr_ratings['reviews_count'] }}</h5>
       {% endif %}
+      
       {% if reviews %}
       <hr>
       <h5 style="color: blue">Reviews</h5>
-      {% for review in reviews %}
-      <ph5User : {{review.review_user_email}}</h5>
-      <h5>rating: {{review.review_rating}}</h5>
-      <h5>review: {{review.review_text}}</h5>
-      <h5>Review date: {{review.review_date}}</h5>
-      <h5>Review time: {{review.review_time}}</h5>
-      {% endfor %}
+        {% for review in reviews %}
+        <h6>User : {{review.review_user_email}}<h6>
+        <h6>rating: {{review.review_rating}}<h6>
+        <h6>review: {{review.review_text}}<h6>
+        <h6>Review date: {{review.review_date}}<h6>
+        <h6>Review time: {{review.review_time}}<h6>
+        {% endfor %}
       {% endif %}
-      <a href="url_for('new_review', {{book.isbn}}) class="card-link">Another link</a>
+      <hr>
+      <a href="{{url_for('new_review', review_isbn=book.isbn) }}">Add a Review</a>
       <a href="{{ url_for ('search_book') }}">Search Another book</a>
-      <a href="/search_book" class="card-link">show another book</a>
     </div>
+      
   </div>
 </div>
 

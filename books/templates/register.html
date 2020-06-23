@@ -1,10 +1,24 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    Register
+{% block premain %}
+{% if success_message %}
+<div class="alert alert-success">
+    <strong>Success:</strong> {{ success_message }}
+</div>
+{%endif%}
+
+{% if error_message %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> {{ error_message }}
+</div>
+{%endif%}
 {% endblock %}
 
-
+{% if error_message %}
+<div class="alert alert-danger">
+    <strong>Error:</strong> {{ error_message }}
+</div>
+{%endif%}
 
 {% block main %}
     <form name="register" action="/register" method="post">

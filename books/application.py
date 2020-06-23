@@ -50,7 +50,7 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 def index():
     """Show root"""
-    return render_template("index.html")
+    return render_template("login.html")
 
 @app.route("/test")
 def test():
@@ -79,11 +79,11 @@ def login():
 
         # Ensure user_email was submitted
         if not request.form.get("user_email"):
-            return render_template("error.html", message="must provide your login email address, 403")
+            return render_template("login.html", error_message="must provide your login email address, 403")
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return render_template("error.html", message="must provide password, 403")
+            return render_template("login.html", error_message="must provide password, 403")
 
         # Query database for user_email
         user_email = request.form.get("user_email")
@@ -92,13 +92,13 @@ def login():
 
         # Ensure user_email exists and password is correct
         if len(rows) != 1 or not check_password_hash(rows[0]["user_hash"], request.form.get("password")):
-            return render_template("error.html", message="Invalid user email and/or password, 403")
+            return render_template("login.html", error_message="Invalid user email and/or password, 403")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
-        return redirect("/")
+        return render_template("search_book.html", success_message="user is logged in")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -111,24 +111,24 @@ def change_password():
     """Change user password user"""
     uid = int(session["user_id"])
 
-    # User reached route via POST (as by submitting a form via POST)
+    # User reached route via POS:T (as by submitting a form via POST)
     if request.method == "POST":
         # Query database for user email
         # Ensure old password was submitted
         if not request.form.get("old_password"):
-            return render_template("error.html", message="must provide old password, 403")
+            return render_template("change_password.html", error_message="must provide old password, 403")
 
         # Ensure password was submitted
         elif not request.form.get("new_password"):
-            return render_template("error.html", message="must provide a new password, 403")
+            return render_template("change_password.html", error_message="must provide a new password, 403")
 
         # Ensure Confirm_password was submitted
         elif not request.form.get("confirm_new_password"):
-            return render_template("error.html", message="must provide confirmation password, 403")
+            return render_template("change_password.html", error_message="must provide confirmation password, 403")
 
         # Ensure password and confirmation password match
         elif (request.form.get("confirm_new_password") != request.form.get("new_password")):
-            return render_template("error.html", message="Password and confirmation password don't match, 403")
+            return render_template("change_password.html", error_message="Password and confirmation password don't match, 403")
 
         rows = db.execute("SELECT id, user_email, user_hash FROM users WHERE id = :user_id", {"user_id": uid}).fetchall()
         for row in rows:
@@ -186,31 +186,31 @@ def register():
 
         # Ensure first name was submitted
         if not request.form.get("user_firstname"):
-            return render_template("error.html", message="must provide your First Name, 403")
+            return render_template("register.html", error_message="must provide your First Name, 403")
 
         # Ensure last name was submitted
         elif not request.form.get("user_lastname"):
-            return render_template("error.html", message="must provide your last name, 403")
+            return render_template("register.html", error_message="must provide your last name, 403")
 
         # Ensure email was submitted
         elif not request.form.get("user_email"):
-            return render_template("error.html", message="must provide your email address, 403")
+            return render_template("register.html", error_message="must provide your email address, 403")
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return render_template("error.html", message="must provide password, 403")
+            return render_template("register.html", error_message="must provide password, 403")
 
         # Ensure Confirm_password was submitted
         elif not request.form.get("confirm_password"):
-            return render_template("error.html", message="must provide confirmation password, 403")
+            return render_template("register.html", error_message="must provide confirmation password, 403")
 
         elif (request.form.get("confirm_password") != request.form.get("password")):
-            return render_template("error.html", message="Password and confirmation password don't match, 403")
+            return render_template("register.html", error_message="Password and confirmation password don't match, 403")
 
         # Check if user_email exists in database
         for user in users:
             if (user['user_email'].lower() == request.form.get("user_email").lower()):
-                return render_template("error.html", message="This email address already exists, 403")
+                return render_template("register.html", error_message="This email address already exists, 403")
 
         # generate password hash key
         user_fn = request.form.get("user_firstname").capitalize()
@@ -221,7 +221,7 @@ def register():
         db.execute("INSERT INTO users (user_firstname, user_lastname, user_email, user_hash) VALUES (:user_firstname, :user_lastname, :user_email, :user_hash)",
             {"user_firstname": user_fn, "user_lastname": user_ln, "user_email": user_email,"user_hash": user_hash})
         db.commit()
-        return render_template("index.html")
+        return render_template("index.html", success_message = "You've signed up for our service with success")
 
     else:
         return render_template("register.html")
@@ -236,6 +236,10 @@ def search_book():
     # User reached route via POST (as by submitting a form via POST)
     # search for ISBN, AUTHOR ou TITLE based on entry
     if request.method == "POST":
+
+                # Ensure user_email was submitted
+        if not request.form.get("search_book"):
+            return render_template("search_book.html", error_message="Nothing to search, 403")
         
         search_book=request.form.get("search_book")
         books=db.execute("SELECT * FROM books WHERE isbn LIKE :search_book OR lower(title) LIKE :search_book OR lower(author) LIKE :search_book ORDER BY title ASC ",

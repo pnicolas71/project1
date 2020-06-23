@@ -28,24 +28,18 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3" id="nav-books">
-        <a class="navbar-brand" href="#"><strong>GOOD BOOKS</strong><small>The pleasure of reading and
-            sharing</small></a>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-3 fixed-top navbookscolor">
+        <a class="navbar-brand" href="#"><strong>GOOD BOOKS</strong></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         {% if session.user_id %}
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="/search_book">Search for Book</a></li>
-            </ul>
-
-        </div>
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
+                <li class="nav-item search-button"><a class="nav-link" id="search-link" href="/search_book">Search for a Book</a></li>
                 <li class="nav-item"><a class="nav-link" href="/logout">log out</a></li>
                 <li class="nav-item"><a class="nav-link" href="/change_password">Change password</a></li>
             </ul>
@@ -61,15 +55,16 @@
     </nav>
 
     <main>
-    <div class="container">
-        {% block premain %}
-        {% endblock %}
-        <div class="row">
-            <div class="col-0 col-sm-0 col-md-3 col-lg-5">
+    <div class="container premain">
+            {% block premain %}
+            {% endblock %}
+         <div class="row">
+            <div class="col-lg-3 ou col-xl-4">
+                <div class="top-left" id="pleasure-read">The pleasure of reading and sharing</div> 
                 <img id="books-img" src="/static/image/books.jpg"> 
-                <img id="books-hor" src="/static/image/books-hor.jpg">   
+                <img id="books-hor" src="/static/image/books-hor.jpg">  
             </div>
-            <div class="col-12 col-sm-12 col-md-9 col-lg-7">
+            <div class="col-12 ou col-sm-12 ou col-md-12 ou col-lg-9 ou col-xl-8" id=col2>
                 {% block main %}
                 {% endblock %}
             </div>

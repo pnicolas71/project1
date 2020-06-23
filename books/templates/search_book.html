@@ -5,20 +5,25 @@
 {% endblock %}
 
 {% block premain %}
+{% if success_message %}
+<div class="alert alert-success">
+    <strong>Success:</strong> {{ success_message }}
+</div>
+{%endif%}
 
 {% if error_message %}
 <div class="alert alert-danger">
-    <strong>ERROR:</strong> {{ error_message }}
+    <strong>Error:</strong> {{ error_message }}
 </div>
-{% endif %}
+{%endif%}
 {% endblock %}
 
 {% block main %}
-    <form id="searc-book" name="search_book" action="/search_book" method="post">
+    <form name="search_book" action="/search_book" method="post">
         <div class="form-group">
-            <input class="form-control" name="search_book" placeholder="enter isbn or author name or book title" 
-                type="text" id="search_book">
+            <input class="form-control" id="search-input" name="search_book" placeholder="enter isbn or author name or book title" 
+                type="text">
         </div>
-        <button class="btn btn-primary" type="submit">Search for Book</button>
+        <button class="btn" type="submit">Search for Books</button>
     </form>
 {% endblock %}
